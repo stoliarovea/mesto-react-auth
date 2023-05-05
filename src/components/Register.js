@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Register() {
     return (
         <form className="signup-signin-form">
@@ -17,7 +19,8 @@ function Register() {
                 maxLength="200"
                 required />
             <button className="signup-signin-form__submit-button" type="submit">Зарегистрироваться</button>
-            <p className="signup-signin-form__link">Уже зарегистрированы? Войти</p>
+            <p className="signup-signin-form__sign">Уже зарегистрированы? 
+            <Link className="signup-signin-form__link" to="/sign-in">Войти</Link></p>
         </form>
     );
 }

@@ -11,4 +11,9 @@
     text-align: center;
     color: #000000;
     border: 0;
+    cursor: pointer;
 }
+
+.signup-signin-form__submit-button:hover {
+    opacity: 0.8;
+  }

@@ -1,6 +1,6 @@
 import '../index.css';
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Header from './Header';
 import ProtectedRouteElement from './ProtectedRoute';
 import Register from './Register';
@@ -12,6 +12,7 @@ import ImagePopup from './ImagePopup';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+import InfoTooltip from './InfoTooltip';
 import api from '../utils/api';
 import CurrentUserContext from '../contexts/CurrentUserContext';
 
@@ -24,6 +25,7 @@ function App() {
   const [cards, setCards] = React.useState([]);
   const [selectedCard, setSelectedCard] = React.useState({});
   const [loggedIn, setloggedIn] = React.useState(false);
+  const [isInfoTooltipOpen, setInfoTooltipOpen] = React.useState(false);
 
   function handleUpdateAvatar(link) {
     api.changeAvatar(link.avatar).then((data) => {
@@ -114,22 +116,36 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <div className="content">
-          <Header />
           <Routes>
-            <Route path="/sign-up" element={<Register />} />
-            <Route path="/sign-in" element={<Login />} />
-            <Route path="/" element={<ProtectedRouteElement loggedIn={loggedIn}
-              element={Main}
-              onEditAvatar={handleEditAvatarClick}
-              onEditProfile={handleEditProfileClick}
-              onAddPlace={handleAddPlaceClick}
-              onCardClick={handleCardClick}
-              onCardLike={handleCardLike}
-              onCardDelete={handleCardDelete}
-              cards={cards} />
+            <Route path="/sign-up" element={
+              <>
+                <Header link="Вход" />
+                <Register />
+              </>
+            } />
+            <Route path="/sign-in" element={
+              <>
+                <Header link="Регистрация" />
+                <Login />
+              </>
+            } />
+            <Route path="/" element={
+              <>
+                <Header email="email@mail.com" link="Выйти" />
+                <ProtectedRouteElement
+                  loggedIn={loggedIn}
+                  element={Main}
+                  onEditAvatar={handleEditAvatarClick}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onCardClick={handleCardClick}
+                  onCardLike={handleCardLike}
+                  onCardDelete={handleCardDelete}
+                  cards={cards} />
+                <Footer />
+              </>
             } />
           </Routes>
-          <Footer />
           <EditAvatarPopup
             isOpen={isEditAvatarPopupOpen}
             onClose={closeAllPopups}
@@ -151,6 +167,10 @@ function App() {
           <ImagePopup
             card={selectedCard}
             onClose={closeAllPopups} />
+          <InfoTooltip
+            isOpen={isInfoTooltipOpen}
+            onClose={closeAllPopups}
+          />
         </div>
       </div>
     </CurrentUserContext.Provider>

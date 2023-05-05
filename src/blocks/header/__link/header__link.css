@@ -1,5 +1,5 @@
-.header__email {
-    margin: 6px 0 0 auto;
+.header__link {
+    margin: 6px 0 0 24px;
     padding: 0;
     font-family: 'Inter';
     font-style: normal;
@@ -8,4 +8,10 @@
     line-height: 22px;
     text-align: right;
     color: #FFFFFF;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.header__link:hover {
+    opacity: 0.8;
 }
