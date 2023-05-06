@@ -8,7 +8,7 @@ function Header(props) {
       <p className="header__email">{props.email}</p>
       <Link
         className={`header__link ${props.link === "Выйти" ? 'header__link_dark' : ''}`}
-        to={props.link === "Регистрация" ? '/sign-up' : '/sign-in'}>{props.link}</Link>
+        to={props.link === "Регистрация" ? '/sign-up' : '/sign-in'} onClick={props.link === "Выйти" ? props.onLogout : null}>{props.link}</Link>
     </header>
   );
 }

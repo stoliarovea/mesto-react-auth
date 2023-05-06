@@ -1,6 +1,6 @@
 import '../index.css';
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Header from './Header';
 import ProtectedRouteElement from './ProtectedRoute';
 import Register from './Register';
@@ -14,6 +14,7 @@ import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import InfoTooltip from './InfoTooltip';
 import api from '../utils/api';
+import apiAuth from '../utils/apiAuth';
 import CurrentUserContext from '../contexts/CurrentUserContext';
 
 function App() {
@@ -24,8 +25,61 @@ function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
   const [cards, setCards] = React.useState([]);
   const [selectedCard, setSelectedCard] = React.useState({});
-  const [loggedIn, setloggedIn] = React.useState(false);
   const [isInfoTooltipOpen, setInfoTooltipOpen] = React.useState(false);
+  const [registered, setRegistered] = React.useState(false);
+  const [loggedIn, setloggedIn] = React.useState(false);
+  const [userEmail, setUserEmail] = React.useState('');
+
+  const navigate = useNavigate();
+
+  function handleSignUp(email, password) {
+    apiAuth.signup(email, password).then((data) => {
+      if (data) {
+        setRegistered(true);
+        setInfoTooltipOpen(true);
+        navigate('/sign-in');
+      }
+    }).catch((err) => {
+      setInfoTooltipOpen(true);
+    });
+  };
+
+  function handleSignIn(email, password) {
+    apiAuth.signin(email, password).then((data) => {
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        setUserEmail(data.data.email);
+        setloggedIn(true);
+        navigate('/');
+      } else {
+        setInfoTooltipOpen(true);
+      }
+    }).catch((err) => {
+      console.log(err);
+      setInfoTooltipOpen(true);
+    });
+  };
+
+  function handleValidation() {
+    if (localStorage.getItem('token')) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        apiAuth.validation(token).then((data) => {
+          setUserEmail(data.data.email);
+          setloggedIn(true);
+          navigate('/');
+        }).catch((err) => {
+          console.log(err);
+        });
+      }
+    };
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('token');
+    setloggedIn(false);
+    navigate('/sign-in');
+  };
 
   function handleUpdateAvatar(link) {
     api.changeAvatar(link.avatar).then((data) => {
@@ -91,10 +145,13 @@ function App() {
     setEditAvatarPopupOpen(false);
     setAddPlacePopupOpen(false);
     setEditProfilePopupOpen(false);
+    setInfoTooltipOpen(false);
+    setRegistered(false);
     setSelectedCard({});
   };
 
   React.useEffect(() => {
+    handleValidation();
     api.getUserInfo()
       .then((userData) => {
         setCurrentUser(userData);
@@ -109,7 +166,6 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-
   }, []);
 
   return (
@@ -120,18 +176,23 @@ function App() {
             <Route path="/sign-up" element={
               <>
                 <Header link="Вход" />
-                <Register />
+                <Register
+                  onSingUp={handleSignUp} />
               </>
             } />
             <Route path="/sign-in" element={
               <>
                 <Header link="Регистрация" />
-                <Login />
+                <Login
+                  onSingIn={handleSignIn} />
               </>
             } />
             <Route path="/" element={
               <>
-                <Header email="email@mail.com" link="Выйти" />
+                <Header
+                  email={userEmail}
+                  link="Выйти"
+                  onLogout={handleLogout} />
                 <ProtectedRouteElement
                   loggedIn={loggedIn}
                   element={Main}
@@ -169,6 +230,7 @@ function App() {
             onClose={closeAllPopups} />
           <InfoTooltip
             isOpen={isInfoTooltipOpen}
+            isRegistered={registered}
             onClose={closeAllPopups}
           />
         </div>
