@@ -10,7 +10,7 @@ class ApiAuth {
     return Promise.reject(`Ошибка: ${res.status}`);
   }
 
-  signup(email, password) {
+  signUp(email, password) {
     return fetch(`${this._baseUrl}/signup`, {
       method: 'POST',
       headers: {
@@ -23,7 +23,7 @@ class ApiAuth {
     }).then(this._checkResponse);
   }
 
-  signin(email, password) {
+  signIn(email, password) {
     return fetch(`${this._baseUrl}/signin`, {
       method: 'POST',
       headers: {
@@ -36,7 +36,7 @@ class ApiAuth {
     }).then(this._checkResponse);
   }
 
-  validation(token) {
+  checkToken(token) {
     return fetch(`${this._baseUrl}/users/me`, {
       method: 'GET',
       headers: {
@@ -48,8 +48,7 @@ class ApiAuth {
 }
 
 const apiAuth = new ApiAuth({
-//  baseUrl: 'https://auth.nomoreparties.co',
-  baseUrl: 'http://104.131.160.75:3000'
+  baseUrl: 'https://auth.nomoreparties.co'
 })
 
 export default apiAuth;

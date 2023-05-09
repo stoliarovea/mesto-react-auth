@@ -17,8 +17,6 @@ function Register(props) {
     function handleSubmit(e) {
         e.preventDefault();
         props.onSingUp(email, password);
-        setEmail('');
-        setPassword('');
     }
 
     return (
@@ -30,6 +28,7 @@ function Register(props) {
                 value={email || ''}
                 onChange={handleEmailChange}
                 placeholder="Email"
+                maxLength="40"
                 required />
             <input
                 className="signup-signin-form__input"

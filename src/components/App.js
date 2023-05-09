@@ -1,6 +1,6 @@
 import '../index.css';
 import React from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import Header from './Header';
 import ProtectedRouteElement from './ProtectedRoute';
 import Register from './Register';
@@ -27,29 +27,30 @@ function App() {
   const [selectedCard, setSelectedCard] = React.useState({});
   const [isInfoTooltipOpen, setInfoTooltipOpen] = React.useState(false);
   const [registered, setRegistered] = React.useState(false);
-  const [loggedIn, setloggedIn] = React.useState(false);
+  const [loggedIn, setLoggedIn] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState('');
 
   const navigate = useNavigate();
 
   function handleSignUp(email, password) {
-    apiAuth.signup(email, password).then((data) => {
+    apiAuth.signUp(email, password).then((data) => {
       if (data) {
         setRegistered(true);
         setInfoTooltipOpen(true);
         navigate('/sign-in');
       }
     }).catch((err) => {
+      setRegistered(false);
       setInfoTooltipOpen(true);
     });
   };
 
   function handleSignIn(email, password) {
-    apiAuth.signin(email, password).then((data) => {
+    apiAuth.signIn(email, password).then((data) => {
       if (data.token) {
         localStorage.setItem('token', data.token);
-        setUserEmail(data.data.email);
-        setloggedIn(true);
+        setUserEmail(email);
+        setLoggedIn(true);
         navigate('/');
       } else {
         setInfoTooltipOpen(true);
@@ -60,24 +61,23 @@ function App() {
     });
   };
 
-  function handleValidation() {
-    if (localStorage.getItem('token')) {
-      const token = localStorage.getItem('token');
-      if (token) {
-        apiAuth.validation(token).then((data) => {
-          setUserEmail(data.data.email);
-          setloggedIn(true);
-          navigate('/');
-        }).catch((err) => {
-          console.log(err);
-        });
-      }
+  function checkToken() {
+    localStorage.getItem('token')
+    const token = localStorage.getItem('token');
+    if (token) {
+      apiAuth.checkToken(token).then((data) => {
+        setUserEmail(data.data.email);
+        setLoggedIn(true);
+        navigate('/');
+      }).catch((err) => {
+        console.log(err);
+      });
     };
   }
 
   function handleLogout() {
     localStorage.removeItem('token');
-    setloggedIn(false);
+    setLoggedIn(false);
     navigate('/sign-in');
   };
 
@@ -151,48 +151,51 @@ function App() {
   };
 
   React.useEffect(() => {
-    handleValidation();
-    api.getUserInfo()
-      .then((userData) => {
-        setCurrentUser(userData);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    api.getInitialCards()
-      .then((data) => {
-        setCards(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    checkToken();
   }, []);
+
+  React.useEffect(() => {
+    if (loggedIn) {
+      api.getUserInfo()
+        .then((userData) => {
+          setCurrentUser(userData);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      api.getInitialCards()
+        .then((data) => {
+          setCards(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [loggedIn]);
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <div className="content">
+          <Header
+            loggedIn={loggedIn}
+            email={userEmail}
+            onLogout={handleLogout} />
           <Routes>
             <Route path="/sign-up" element={
               <>
-                <Header link="Вход" />
                 <Register
                   onSingUp={handleSignUp} />
               </>
             } />
             <Route path="/sign-in" element={
               <>
-                <Header link="Регистрация" />
                 <Login
                   onSingIn={handleSignIn} />
               </>
             } />
             <Route path="/" element={
               <>
-                <Header
-                  email={userEmail}
-                  link="Выйти"
-                  onLogout={handleLogout} />
                 <ProtectedRouteElement
                   loggedIn={loggedIn}
                   element={Main}

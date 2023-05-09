@@ -8,4 +8,17 @@
     line-height: 22px;
     text-align: right;
     color: #FFFFFF;
+    width: fit-content;
+    height: fit-content;
+    min-width: 120px;
+    min-height: 23px;
+}
+
+@media (max-width: 767px) {
+    .header__email {
+        margin: 6px auto 10px;
+        max-width: 320px;
+        font-size: 12px;
+        order: 3;
+    }
 }

@@ -13,14 +13,6 @@ function AddPlacePopup(props) {
         }
     }, [props.isOpen]);
 
-    function handleLocationChange(e) {
-        newLocationRef.current.value = e.target.value;
-    }
-
-    function handleLinkChange(e) {
-        newLinkRef.current.value = e.target.value;
-    }
-
     function handleSubmit(e) {
         e.preventDefault();
         props.onAddPlace(newLocationRef.current.value, newLinkRef.current.value);
@@ -40,7 +32,6 @@ function AddPlacePopup(props) {
                 name="input-card-location"
                 className="popup__input"
                 type="text"
-                onChange={handleLocationChange}
                 placeholder="Название"
                 minLength="2"
                 maxLength="30"
@@ -53,7 +44,6 @@ function AddPlacePopup(props) {
                 name="input-card-link"
                 className="popup__input"
                 type="url"
-                onChange={handleLinkChange}
                 placeholder="Ссылка на картинку"
                 ref={newLinkRef}
                 required />

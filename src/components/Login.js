@@ -16,8 +16,6 @@ function Login(props) {
     function handleSubmit(e) {
         e.preventDefault();
         props.onSingIn(email, password);
-        setEmail('');
-        setPassword('');
     }
 
     return (
