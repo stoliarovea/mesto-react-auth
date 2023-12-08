@@ -1,3 +1,3 @@
 Nested, HTML, CSS, JavaScript, React.
 
-Project: https://stoliarovea.github.io/react-mesto-auth
+Mesto (React: registration and authorization) Project: https://stoliarovea.github.io/react-mesto-auth
